@@ -1,0 +1,43 @@
+ // Continue asking for actions
+        | "edit" ->
+            printfn "Enter the contact ID to edit:"
+            let id = int (Console.ReadLine())
+            let contactOpt = contacts |> List.tryFind (fun c -> c.Id = id)
+
+            match contactOpt with
+            | Some contact ->
+                printfn "Editing contact %s..." contact.Name
+                let updatedContact = getContactInfo id
+                contacts <- contacts |> List.map (fun c -> if c.Id = id then updatedContact else c)
+                printfn "Contact updated!"
+            | None -> printfn "No contact found with ID %d." id
+
+            loop () // Continue asking for actions
+        | "delete" ->
+            printfn "Enter the contact ID to delete:"
+            let id = int (Console.ReadLine())
+            let contactOpt = contacts |> List.tryFind (fun c -> c.Id = id)
+
+            match contactOpt with
+            | Some _ ->
+                contacts <- contacts |> List.filter (fun c -> c.Id <> id)
+                printfn "Contact with ID %d deleted!" id
+            | None -> printfn "No contact found with ID %d." id
+
+            loop () // Continue asking for actions
+        | "view" ->
+            printfn "Here are all your contacts:"
+
+            contacts
+            |> List.iter (fun c -> printfn "ID: %d, Name: %s, Phone: %s, Email: %s" c.Id c.Name c.PhoneNumber c.Email)
+
+            loop () // Continue asking for actions
+        | "quit" -> printfn "Goodbye!"
+        | _ ->
+            printfn "Invalid action. Please choose one of the following: add, search, edit, delete, view, quit."
+            loop () // Ask again if the action is invalid
+
+    loop () // Start the loop
+
+// Run the contact storing function
+storeContacts ()
