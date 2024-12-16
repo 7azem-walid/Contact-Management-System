@@ -1,22 +1,60 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "pl3", "pl3\pl3.fsproj", "{B9992C86-2479-4FE7-95A1-EDBB3C3924DB}"
-EndProject
-Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B9992C86-2479-4FE7-95A1-EDBB3C3924DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B9992C86-2479-4FE7-95A1-EDBB3C3924DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B9992C86-2479-4FE7-95A1-EDBB3C3924DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B9992C86-2479-4FE7-95A1-EDBB3C3924DB}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-EndGlobal
+module program.fs
+
+open System
+// open System.Windows.Forms
+
+// Define the Contact type with an ID field
+type Contact =
+    { Id: int
+      Name: string
+      PhoneNumber: string
+      Email: string }
+
+// Function to get contact info from the user
+let getContactInfo (id: int) =
+    printfn "Enter the contact's name:"
+    let name = Console.ReadLine()
+
+    printfn "Enter the contact's phone number:"
+    let phoneNumber: string = Console.ReadLine()
+
+    printfn "Enter the contact's email:"
+    let email = Console.ReadLine()
+
+    // Create a new contact record with the provided ID
+    { Id = id
+      Name = name
+      PhoneNumber = phoneNumber
+      Email = email }
+
+// Function to store contacts
+let storeContacts () =
+    let mutable contacts = []
+    let mutable idCounter = 1
+
+    let rec loop () =
+        // Ask the user what action they want to perform
+        printfn "What would you like to do? (add/search/edit/delete/view/quit)"
+        let action = Console.ReadLine().ToLower()
+
+        match action with
+        | "add" ->
+            let newContact = getContactInfo idCounter
+            contacts <- newContact :: contacts
+            idCounter <- idCounter + 1 // Increment ID counter
+            loop () // Continue asking for actions
+        | "search" ->
+            printfn "Enter the contact's name to search:"
+            let name = Console.ReadLine()
+
+            let foundContacts =
+                contacts
+                |> List.filter (fun c -> c.Name.Contains(name, StringComparison.OrdinalIgnoreCase))
+
+            if List.isEmpty foundContacts then
+                printfn "No contacts found with the name %s." name
+            else
+                foundContacts
+                |> List.iter (fun c ->
+                    printfn "ID: %d, Name: %s, Phone: %s, Email: %s" c.Id c.Name c.PhoneNumber c.Email)
